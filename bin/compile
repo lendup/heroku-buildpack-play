@@ -51,6 +51,7 @@ done
 
 PLAY_VERSION=$(get_play_version conf/dependencies.yml)
 DEFAULT_PLAY_VERSION="1.2.7"
+DEFAULT_YARN_VERSION=0.17.0
 VERSION_DECLARED=true
 
 if [ -z "$PLAY_VERSION" ] ; then
@@ -126,7 +127,7 @@ elif test -d $CACHE_DIR/node/node_modules; then
   # If we have a cached shrinkwrap, and it matches the current
   # shrinkwrap, copy over the node_modules.
   USING_CACHED_NODE=0
-  if [ -f "$CACHE_DIR/npm-shrinkwrap.json" ]; then
+  if [[ -f "$CACHE_DIR/npm-shrinkwrap.json" && (! -f yarn.lock) ]]; then
     if cmp --silent "$CACHE_DIR/npm-shrinkwrap.json" npm-shrinkwrap.json; then
         USING_CACHED_NODE=1
         status "Shrinkwrap file HAS NOT changed"
@@ -135,14 +136,28 @@ elif test -d $CACHE_DIR/node/node_modules; then
     fi
   fi
 
+  if [[ -f "$CACHE_DIR/yarn.lock" ]]; then
+      if cmp --silent "$CACHE_DIR/yarn.lock" yarn.lock; then
+          USING_CACHED_NODE=1
+          status "yarn.lock HAS NOT changed"
+          status "Using cached node_modules directory"
+      fi
+  fi
+
   if [ "$USING_CACHED_NODE" -eq "0" ]; then
-    status "Shrinkwrap file HAS changed or doesn't exist in cache"
+    status "yarn.lock/npm-shrinkwrap.json HAS changed or doesn't exist in cache"
     status "Pruning cached dependencies not specified in package.json"
     npm prune 2>&1 | indent
     npm rebuild 2>&1 | indent
   fi
 
-  cp npm-shrinkwrap.json "$CACHE_DIR/npm-shrinkwrap.json"
+  if [ -f npm-shrinkwrap.json ]; then
+      cp npm-shrinkwrap.json "$CACHE_DIR/npm-shrinkwrap.json"
+  fi
+
+  if [ -f yarn.lock ]; then
+      cp yarn.lock "$CACHE_DIR/yarn.lock"
+  fi
 
   if test -f $CACHE_DIR/node/.heroku/node-version && [ $(cat $CACHE_DIR/node/.heroku/node-version) != "$node_version" ]; then
     status "Node version changed since last build; rebuilding dependencies"
@@ -158,8 +173,13 @@ fi
   fi
 
   status "Installing dependencies"
-  # Make npm output to STDOUT instead of its default STDERR
-  npm install 2>&1 | indent
+  if [ -f yarn.lock ]; then
+      npm -g install "yarn@$YARN_VERSION"
+      yarn
+  else
+      # Make npm output to STDOUT instead of its default STDERR
+      npm install 2>&1 | indent
+  fi
 )
 
 # Purge node-related cached content, being careful not to purge the top-level
