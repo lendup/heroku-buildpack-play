@@ -17,7 +17,7 @@ BIN_DIR=$(cd $(dirname $0); pwd) # absolute path
 curl --silent --location http://heroku-jvm-common.s3.amazonaws.com/jvm-buildpack-common.tar.gz | tar xz
 . bin/util
 . bin/java
-. opt/jdbc.sh
+[ -e opt/jdbc.sh ] && . opt/jdbc.sh
 
 export_env_dir $ENV_DIR
 
