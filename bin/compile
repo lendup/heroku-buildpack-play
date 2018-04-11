@@ -215,23 +215,30 @@ rm -rf "$BUILD_DIR/client"
 
 cd $BUILD_DIR
 
-# Build app
-echo "-----> Building Play! application..."
-$PLAY_PATH/play version | sed -u 's/^/       /'
+(
+  if [ -d "$ENV_DIR" ]; then
+    status "Exporting config vars to environment"
+    export_env_dir $ENV_DIR
+  fi
 
-# Precompile the Play! application at the root of $BUILD_DIR
-APP_DIR=./
-echo "       Building Play! application at directory $APP_DIR"
+  # Build app
+  echo "-----> Building Play! application..."
+  $PLAY_PATH/play version | sed -u 's/^/       /'
 
-DEPENDENCIES_CMD="$PLAY_PATH/play dependencies $APP_DIR --forProd --forceCopy --silent -Duser.home=$BUILD_DIR 2>&1"
-echo "       Resolving dependencies: $DEPENDENCIES_CMD"
-eval "$DEPENDENCIES_CMD" | sed -u 's/^/       /'
-check_compile_status
+  # Precompile the Play! application at the root of $BUILD_DIR
+  APP_DIR=./
+  echo "       Building Play! application at directory $APP_DIR"
 
-PRECOMPILE_CMD="DISABLE_PARALLEL_CLASSLOADING=true $PLAY_PATH/play precompile $APP_DIR ${PRECOMPILE_ID} --silent 2>&1"
-echo "       Precompiling: $PRECOMPILE_CMD"
-eval "$PRECOMPILE_CMD" | sed -u 's/^/       /'
-check_compile_status
+  DEPENDENCIES_CMD="$PLAY_PATH/play dependencies $APP_DIR --forProd --forceCopy --silent -Duser.home=$BUILD_DIR 2>&1"
+  echo "       Resolving dependencies: $DEPENDENCIES_CMD"
+  eval "$DEPENDENCIES_CMD" | sed -u 's/^/       /'
+  check_compile_status
+
+  PRECOMPILE_CMD="DISABLE_PARALLEL_CLASSLOADING=true $PLAY_PATH/play precompile $APP_DIR ${PRECOMPILE_ID} --silent 2>&1"
+  echo "       Precompiling: $PRECOMPILE_CMD"
+  eval "$PRECOMPILE_CMD" | sed -u 's/^/       /'
+  check_compile_status
+)
 
 # Repack Play! framework into cache
 mkdir -p $CACHE_DIR
