@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+echo "If you're trying to use this script, please talk with infra team so we can understand the use case" >&2
+exit 1
+
 #TODO: enforce parameters for switching modes
 
 BUILD_DIR=$PWD
