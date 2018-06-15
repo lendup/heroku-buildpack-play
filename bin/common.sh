@@ -28,6 +28,7 @@ install_play()
 
   PLAY_TAR_FILE="play-heroku.tar.gz"
   echo "-----> Installing Play! $VER_TO_INSTALL....."
+  echo "----->   from $PLAY_URL"
   curl --silent --max-time 150 -u "$ARTIFACTORY_USERNAME:$ARTIFACTORY_PASSWORD" --location $PLAY_URL -o $PLAY_TAR_FILE
   if [ ! -f $PLAY_TAR_FILE ]; then
     echo "-----> Error downloading Play! framework. Please try again..."
