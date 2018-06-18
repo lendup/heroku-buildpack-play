@@ -215,6 +215,12 @@ rm -rf "$BUILD_DIR/client"
 
 cd $BUILD_DIR
 
+# If it does not exist, force a blank dev.conf onto the filesystem.
+if [ ! -f $BUILD_DIR/conf/dev.conf ]; then
+    echo "creating empty dev.conf at $BUILD_DIR/conf/dev.conf"
+    touch $BUILD_DIR/conf/dev.conf
+fi
+
 (
   if [ -d "$ENV_DIR" ]; then
     status "Exporting config vars to environment"
