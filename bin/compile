@@ -14,7 +14,7 @@ BIN_DIR=$(cd $(dirname $0); pwd) # absolute path
 # source in common functions
 . $BIN_DIR/common.sh
 
-curl --silent --location http://heroku-jvm-common.s3.amazonaws.com/jvm-buildpack-common.tar.gz | tar xz
+curl --silent --location https://codon-buildpacks.s3.amazonaws.com/buildpacks/heroku/jvm-common.tgz | tar xz
 . bin/util
 . bin/java
 [ -e opt/jdbc.sh ] && . opt/jdbc.sh
