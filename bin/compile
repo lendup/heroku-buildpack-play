@@ -14,14 +14,10 @@ BIN_DIR=$(cd $(dirname $0); pwd) # absolute path
 # source in common functions
 . $BIN_DIR/common.sh
 
-HEROKU_JVM_BUILDPACK_URL=${HEROKU_JVM_BUILDPACK_URL:-"https://buildpack-registry.s3.amazonaws.com/buildpacks/heroku/jvm-v78.tgz"}
-
-echo -n "-----> Installing Heroku JVM Common buildpack from ${HEROKU_JVM_BUILDPACK_URL}..."
-curl --silent --location "$HEROKU_JVM_BUILDPACK_URL" | tar xz
+curl --silent --location http://heroku-jvm-common.s3.amazonaws.com/jvm-buildpack-common.tar.gz | tar xz
 . bin/util
 . bin/java
 [ -e opt/jdbc.sh ] && . opt/jdbc.sh
-echo "done"
 
 export_env_dir $ENV_DIR
 
