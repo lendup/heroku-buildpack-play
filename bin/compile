@@ -14,8 +14,8 @@ BIN_DIR=$(cd $(dirname $0); pwd) # absolute path
 # source in common functions
 . $BIN_DIR/common.sh
 
-# Override JDK 1.6 url. obeyed by the buildpack URL below, possibly not other buildpacks!
-export JDK_URL_1_6="http://heroku-jdk.s3.amazonaws.com/openjdk1.6.0_27.tar.gz"
+# Override JDK 1.6 url if it's not set. obeyed by the buildpack URL below, possibly not other buildpacks!
+export JDK_URL_1_6=${JDK_URL_1_6:-"http://heroku-jdk.s3.amazonaws.com/openjdk1.6.0_27.tar.gz"}
 
 HEROKU_JVM_BUILDPACK_URL=${HEROKU_JVM_BUILDPACK_URL:-"https://buildpack-registry.s3.amazonaws.com/buildpacks/heroku/jvm-v78.tgz"}
 
